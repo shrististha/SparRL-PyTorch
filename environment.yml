@@ -1,0 +1,17 @@
+name: spaRL
+channels:
+  - pytorch
+  - conda-forge
+  - anaconda
+  - defaults
+dependencies:
+  - python>=3.8
+  - pytorch::pytorch
+  - pytorch::torchvision
+  - conda-forge::networkx
+  - conda-forge::python-louvain
+  - conda-forge::tqdm
+  - conda-forge::networkit
+  - conda-forge::scikit-learn
+  - conda-forge::matplotlib
+  - anaconda::pandas

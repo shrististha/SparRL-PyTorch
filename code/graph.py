@@ -89,8 +89,7 @@ class Graph:
         Args:
             size: number of samples.
         """
-        return random.sample(self._G.edges, size)
-
+        return random.sample(list(self._G.edges), size)
     def copy(self):
         return Graph(self.args)
 
