@@ -46,10 +46,21 @@
   * `conda install conda-forge::scikit-learn`
 * matplotlib https://anaconda.org/conda-forge/matplotlib
   * `conda install conda-forge::matplotlib`
-* tqm https://tqdm.github.io
+* tdqm https://tqdm.github.io
   * `pip install tqdm`
 * pandas https://anaconda.org/anaconda/pandas
   * `conda install anaconda::pandas`
+
+## sbatch commands
+* `sbatch $SCRIPT`
+* `squeue -u $USERNAME`
+
+### Example
+To run training on the karate graph over spearman using sbatch, use: 
+```commandline
+sbatch scripts/run.sh
+```
+
 ## To train a model on the karate graph over spearman:
 ```code
 python3 code/main.py --edge_list graphs/karate.edgelist --episodes 500 --T_max 17 --save_dir karate_spearman_models/ --subgraph_len 32 --obj spearman --T_eval 32 --eval_batch_size 1 --decay_episodes 200
