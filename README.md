@@ -25,6 +25,8 @@
   * `conda env create -f environment.yml`
   * Activate conda environment: ` conda activate spaRL      `
 
+Note: To change the target location for the package installation files: run `conda config --add pkgs_dirs $TARGET_DIRECTORY`
+
 ### Install individually
 * networkx, https://networkx.org, https://github.com/networkx/networkx
   * `pip install networkx`
