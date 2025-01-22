@@ -46,7 +46,7 @@
   * `conda install conda-forge::scikit-learn`
 * matplotlib https://anaconda.org/conda-forge/matplotlib
   * `conda install conda-forge::matplotlib`
-* tdqm https://tqdm.github.io
+* tqdm https://tqdm.github.io
   * `pip install tqdm`
 * pandas https://anaconda.org/anaconda/pandas
   * `conda install anaconda::pandas`
