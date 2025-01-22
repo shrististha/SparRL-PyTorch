@@ -52,6 +52,9 @@
   * `conda install anaconda::pandas`
 
 ## sbatch commands
+Ref:
+https://curc.readthedocs.io/en/latest/running-jobs/running-apps-with-jobs.html, https://curc.readthedocs.io/en/latest/running-jobs/slurm-commands.html
+
 * `sbatch $SCRIPT`
 * `squeue -u $USERNAME`
 
