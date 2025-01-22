@@ -13,8 +13,8 @@
     rm ~/miniconda3/miniconda.sh
   ```
   * Refresh bash to get Conda: `source ~/miniconda3/bin/activate`
-* networkit https://networkit.github.io/dev-docs/notebooks/Sparsification.html
-  * 
+* networkit https://networkit.github.io/dev-docs/notebooks/Sparsification.html, https://networkit.github.io/get_started.html#macos
+
   ```bash
     xcode-select --install
     arch -arm64 brew install libomp
