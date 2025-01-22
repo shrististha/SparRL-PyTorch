@@ -1,5 +1,5 @@
 #!/bin/bash                                                                                                       
-#SBATCH --job-name=text_classification       # Job name                                                           
+#SBATCH --job-name=evaluate_episodes       # Job name                                                           
 #SBATCH --output=output.txt               # Output log file (%j will be replaced by the job ID)                
 #SBATCH --error=error.txt                 # Error log file                                                     
 #SBATCH --ntasks=1                           # Number of tasks (typically 1 for a single Python script)           
