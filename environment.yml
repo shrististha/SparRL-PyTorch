@@ -5,8 +5,9 @@ channels:
   - anaconda
   - defaults
 dependencies:
-  - python>=3.8
+  - python
   - pytorch::pytorch
+  - conda-forge::numpy
   - pytorch::torchvision
   - conda-forge::networkx
   - conda-forge::python-louvain
@@ -14,4 +15,5 @@ dependencies:
   - conda-forge::networkit
   - conda-forge::scikit-learn
   - conda-forge::matplotlib
+  - conda-forge::seaborn
   - anaconda::pandas
