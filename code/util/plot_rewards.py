@@ -38,11 +38,11 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--save_dir", default="models",
+    parser.add_argument("--save_dir", default="karate_spearman_models",
         help="Models save directory.")
-    parser.add_argument("--reward_smooth_w", type=int, default=8,
+    parser.add_argument("--reward_smooth_w", type=int, default=64,
                     help="Window size for reward smoothing plot.")
     
-    parser.add_argument("--smooth_eval", action="store_true",
+    parser.add_argument("--smooth_eval", action="store_true", default=False,
                     help="Smooth the eval rewards.")
     main(parser.parse_args())

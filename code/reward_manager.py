@@ -18,9 +18,10 @@ class RewardManager:
         if self.args.obj == "com":
             self._com_detect = CommunityDetection(self.args, self._graph)
         self._valid_pairs = set()
-        
-
-
+        self.reward_map = {
+            "betweenness": self._graph.get_betweenness_list,
+            "closeness": self._graph.get_closeness_list
+        }
 
     def setup(self, part=None):
         if self.args.obj == "spsp":
@@ -30,6 +31,11 @@ class RewardManager:
             self._setup_com()
         elif self.args.obj == "spearman":
             self._setup_spearman()
+        elif self.args.obj == "diameter":
+            self._setup_diameter()
+            print(f'Original Diameter: {self._org_diameter}')
+        elif self.args.obj in self.reward_map:
+            self._setup(self.reward_map[self.args.obj])
         else:
             raise Exception("Invalid Objective.")
             # By default use page rank
@@ -43,9 +49,12 @@ class RewardManager:
         elif self.args.obj == "com":
             #cur_reward = self._compute_com_reward()
             cur_reward = self.edge_com_reward(edge)
-        
         elif self.args.obj == "spearman":
             cur_reward = self._compute_spearman_reward()
+        elif self.args.obj == "diameter":
+            cur_reward = self._compute_diameter_reward()
+        elif self.args.obj in self.reward_map:
+            cur_reward = self._compute_reward(self.reward_map[self.args.obj])
         else:
             #print("USING PR REWARD")
             # By default use page rank
@@ -86,7 +95,7 @@ class RewardManager:
             return 0
 
     def compute_sparmanr(self):
-        cur_pr = list(self._graph.get_page_ranks().values()) 
+        cur_pr = list(self._graph.get_page_ranks().values())
         cur_spearmanr = stats.spearmanr(self._org_pr, cur_pr).correlation
         return cur_spearmanr
 
@@ -94,7 +103,26 @@ class RewardManager:
         cur_spearmanr = self.compute_sparmanr()
         reward = cur_spearmanr - self._prev_spearmanr
         self._prev_spearmanr = cur_spearmanr
+        print('Spearman Reward:', reward)
         return reward#stats.spearmanr(self._org_pr, cur_pr).correlation #* self.args.reward_factor
+
+    def _setup(self, method):
+        self._org_metric = method()
+        self._prev_spearman = 1.0
+
+    def _compute_metric(self, method):
+        current_metric = method()
+        print(f'Current metric: {current_metric}')
+        current_spearman = stats.spearmanr(self._org_metric, current_metric).correlation
+        print(f'Current spearman: {current_spearman}')
+        return 0.0 if np.isnan(current_spearman) else current_spearman
+
+    def _compute_reward(self, method):
+        current_spearman = self._compute_metric(method)
+        reward = current_spearman - self._prev_spearman
+        self._prev_spearman = current_spearman
+        print(f'Reward:{reward}')
+        return reward
 
     def _compute_com_reward(self):
         cur_ari = self._com_detect.ARI_louvain()
@@ -224,8 +252,6 @@ class RewardManager:
         self._org_pr = list(self._graph.get_page_ranks().values())
         self._prev_spearmanr = 1.0
 
-
-        
     def spsp_diff(self, sub_one=False):
         cur_spsp_dists = self._compute_spsp_dists()
         return  cur_spsp_dists - self._spsp_dists
@@ -233,8 +259,24 @@ class RewardManager:
     def reset(self, part=None):
         """Reset rewards states."""
         self.setup(part)
-        
-        
+
+    def _setup_diameter(self):
+        self._org_diameter = self._compute_diameter()
+
+    def _compute_diameter(self):
+        diameters = []
+        for i in range(10):
+            diameter, _ = self._graph.get_diameter()
+            diameters.append(diameter)
+        diameter = np.mean(diameters)
+        return diameter
+
+    def _compute_diameter_reward(self):
+        cur_diameter = self._compute_diameter()
+        diff_d = abs(cur_diameter - self._org_diameter)
+        reward = 1.0 - (diff_d ** diff_d) / self._org_diameter
+        return reward
+
     # def _load_reward_data(self):
     #     with self._reward_lock:
     #         if not RewardManager.loaded_reward_data.value:
@@ -265,4 +307,5 @@ class RewardManager:
     #         }
     #         with open(self._reward_json, "w") as f:
     #             json.dump(reward_data, f)
-                
+
+

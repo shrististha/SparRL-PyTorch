@@ -3,8 +3,10 @@ import community as community_louvain
 from networkx.algorithms.community import greedy_modularity_communities
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
-import numpy as np
+import graph_tool
+import graph_tool.all as gt
 import random
+import networkit as nk
 
 class Graph:
     def __init__(self, args):
@@ -21,14 +23,14 @@ class Graph:
                 self._G = nx.read_edgelist(self.args.edge_list, nodetype=int)
         
         self._relabel_nodes()
+        self.gt_graph = None
+        self.nk_graph = None
         print("self.get_num_edges()", self.get_num_edges())
 
     def _relabel_nodes(self):
         """Relabel nodes to [1, |V|]."""
         mapping = dict(zip(self._G.nodes, range(1,self.num_nodes+1)))
         self._G = nx.relabel_nodes(self._G, mapping)
-        
-
 
     def add_edge(self, src_id, dst_id):
         if not isinstance(src_id, int):
@@ -54,7 +56,96 @@ class Graph:
 
     def get_page_ranks(self):
         return nx.pagerank(self._G, tol=1e-4)
-    
+
+    def set_gt_graph(self):
+        # Create a new Graph-tool graph
+        nx_graph = self._G
+        gt_graph = gt.Graph(directed=nx_graph.is_directed())
+
+        # Add nodes to the Graph-tool graph
+        node_map = {}
+        for node in nx_graph.nodes():
+            node_map[node] = gt_graph.add_vertex()
+
+        # Add edges to the Graph-tool graph
+        for u, v in nx_graph.edges():
+            gt_graph.add_edge(node_map[u], node_map[v])
+        self.gt_graph = gt_graph
+
+    def set_nk_graph(self):
+        nx_graph = self._G
+        if nx_graph.is_directed():
+            nk_graph = nk.DirectedGraph()  # Create directed Networkit graph
+        else:
+            nk_graph = nk.Graph()
+
+        node_map = {}
+        for node in nx_graph.nodes():
+            node_map[node] = nk_graph.addNode()
+        # Add edges from NetworkX to Networkit, using the mapped indices
+        for u, v in nx_graph.edges():
+            nk_graph.addEdge(node_map[u], node_map[v])
+
+        self.nk_graph = nk_graph
+
+    def get_random_vertex_gt(self):
+        return random.choice(list(self.gt_graph.vertices()))
+
+    def get_diameter(self):
+        return self.get_distance_values('Diameter')
+
+    def get_betweenness_list(self):
+        return self.get_centrality_values('Betweenness')
+
+    def get_closeness_list(self):
+        return self.get_centrality_values('Closeness')
+
+    def get_distance_values(self, metrics):
+        self.set_gt_graph()
+        distance_methods = self.get_method_from_metrics_type('Distance')
+        distance_method, dict_params = distance_methods[metrics]
+        if metrics == "Diameter":
+            return distance_method(self.gt_graph, source=self.get_random_vertex_gt())
+
+    def get_centrality_values(self, metrics):
+        """
+        Get metrics value list using the given Centrality Metrics
+        Args:
+            metrics: Centrality Metrics
+
+        Returns: A metrics value list
+        """
+        self.set_nk_graph()
+        centrality_methods = self.get_method_from_metrics_type('Centrality')
+        centrality_method, dict_params = centrality_methods[metrics]
+        if metrics == "Closeness":
+            return centrality_method(self.nk_graph, **dict_params).run().topkScoresList()
+        else:
+            node_metrics_tuple_list = centrality_method(self.nk_graph, **dict_params).run().ranking()
+            return [node_metric_value[1] for node_metric_value in node_metrics_tuple_list]
+
+
+    @staticmethod
+    def get_method_from_metrics_type(metrics_type):
+        """
+        Get the dictionary of metrics method for the metrics type.
+        Args:
+            metrics_type: Metrics type: Centrality/Distance
+
+        Returns:
+            A dict of metrics types and a tuple of method and it's parameters
+        """
+        if metrics_type == 'Centrality':
+            return {
+                "Betweenness": (nk.centrality.EstimateBetweenness, {"normalized": True, "nSamples": 10}),
+                "Closeness": (nk.centrality.TopCloseness, {"k": 34}),
+                # "Eigenvector": (nk.centrality.EigenvectorCentrality, {}),
+            }
+        elif metrics_type == 'Distance':
+            return {
+                'Diameter': (graph_tool.topology.pseudo_diameter, {})
+            }
+
     def get_shortest_path(self, src_id, dst_id):
         try:
             path = nx.shortest_path(self._G, src_id, dst_id)
@@ -161,4 +252,4 @@ class Graph:
 
     def single_source_shortest_path(self, node_id: int, cutoff=50):
         return nx.single_source_shortest_path_length(self._G, node_id, cutoff=cutoff)
-        
+

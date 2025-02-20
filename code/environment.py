@@ -207,12 +207,12 @@ class Environment:
             print("e_i", e_i)
          
             # Run an episode
-            final_reward = self.run_episode()
+            final_reward = self.run_episode(e_i)
 
             # Reset the environment state
             self.reset()
                 
-    def run_episode(self) -> float:
+    def run_episode(self, episode) -> float:
         """Run an episode."""
         # Sample number of edges to prune
         T = self._sample_T()
@@ -271,5 +271,8 @@ class Environment:
                 next_state,
                 edge_idx,
                 reward))
-
+        if self.args.obj == "diameter":
+            print(f'Final Diameter at episode {episode}: {self.reward_man._cur_diameter}')
+            # Throw away prepruned reward
+            print(f'Final Reward at episode {episode}: {reward}')
         return reward

@@ -153,14 +153,16 @@ class SumTree:
         self.args = args
         # Raise to next power of 2 to make full binary tree
         self.capacity = 2 ** math.ceil(
-            math.log(self.args.mem_cap + self.args.expert_mem_cap,2))
+            math.log(self.args.mem_cap + self.args.expert_mem_cap,2)) # Default: 65536
 
         # sum tree 
-        self.tree = torch.zeros(2 * self.capacity - 1).to(device)
-        self.memory = []
+        self.tree = torch.zeros(2 * self.capacity - 1).to(device) # [0, 0, 0]
+        self.memory = [] # Default: 32768
 
         # Memory for expert experiences
-        self.expert_memory = []
+        self.expert_memory = [] # Default: 16384
+
+        # total: 32768 + 16384 = 49152
 
         # Pointer to end of memory
         self._end_pos = 0
