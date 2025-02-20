@@ -271,8 +271,4 @@ class Environment:
                 next_state,
                 edge_idx,
                 reward))
-        if self.args.obj == "diameter":
-            print(f'Final Diameter at episode {episode}: {self.reward_man._cur_diameter}')
-            # Throw away prepruned reward
-            print(f'Final Reward at episode {episode}: {reward}')
         return reward
