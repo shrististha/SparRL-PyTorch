@@ -75,7 +75,7 @@ class Graph:
     def set_nk_graph(self):
         nx_graph = self._G
         if nx_graph.is_directed():
-            nk_graph = nk.DirectedGraph()  # Create directed Networkit graph
+            nk_graph = nk.Graph(directed=True)  # Create directed Networkit graph
         else:
             nk_graph = nk.Graph()
 
@@ -119,10 +119,11 @@ class Graph:
         centrality_methods = self.get_method_from_metrics_type('Centrality')
         centrality_method, dict_params = centrality_methods[metrics]
         if metrics == "Closeness":
+            # TODO: Need to change the closeness score order to match the node order
             return centrality_method(self.nk_graph, **dict_params).run().topkScoresList()
         else:
-            node_metrics_tuple_list = centrality_method(self.nk_graph, **dict_params).run().ranking()
-            return [node_metric_value[1] for node_metric_value in node_metrics_tuple_list]
+            scores = centrality_method(self.nk_graph, **dict_params).run().scores()
+            return scores
 
 
     @staticmethod
