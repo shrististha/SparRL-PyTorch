@@ -252,8 +252,10 @@ class Environment:
             pruned_edge = self.prune_edge(edge_idx, state.subgraph)
 
             # Compute the reward for the sparsification decision
-            reward = self.reward_man.compute_reward(pruned_edge)
-
+            current_reward = self.reward_man.compute_reward(pruned_edge)
+            if current_reward is None:
+                break
+            reward = current_reward
             prev_state = state
 
         

@@ -97,6 +97,10 @@ class Graph:
     def get_betweenness_list(self):
         return self.get_centrality_values('Betweenness')
 
+    def get_betweenness_nx(self):
+        scores = nx.betweenness_centrality(self._G, k=4, normalized=True, endpoints=True)
+        return list(scores.values())
+
     def get_closeness_list(self):
         return self.get_centrality_values('Closeness')
 
@@ -138,7 +142,7 @@ class Graph:
         """
         if metrics_type == 'Centrality':
             return {
-                "Betweenness": (nk.centrality.EstimateBetweenness, {"normalized": True, "nSamples": 10}),
+                "Betweenness": (nk.centrality.EstimateBetweenness, {"normalized": True, "nSamples": 34}),
                 "Closeness": (nk.centrality.TopCloseness, {"k": 34}),
                 # "Eigenvector": (nk.centrality.EigenvectorCentrality, {}),
             }

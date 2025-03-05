@@ -155,7 +155,7 @@ class ResultsManager:
         elif self.args.obj == "diameter":
            return self.env.reward_man._compute_diameter()
         elif self.args.obj in self.env.reward_man.reward_map:
-           return self.env.reward_man._compute_reward(self.env.reward_man.reward_map[self.args.obj])
+           return self.env.reward_man._compute_metric(self.env.reward_man.reward_map[self.args.obj])
 
     def plot_results(self, rewards):
         # def moving_average(x):

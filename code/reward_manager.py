@@ -20,6 +20,7 @@ class RewardManager:
         self._valid_pairs = set()
         self.reward_map = {
             "betweenness": self._graph.get_betweenness_list,
+           # "betweenness": self._graph.get_betweenness_nx,
             "closeness": self._graph.get_closeness_list
         }
 
@@ -115,10 +116,14 @@ class RewardManager:
         print(f'Current metric: {current_metric}')
         current_spearman = stats.spearmanr(self._org_metric, current_metric).correlation
         print(f'Current spearman: {current_spearman}')
-        return 0.0 if np.isnan(current_spearman) else current_spearman
+        # return 0.0 if np.isnan(current_spearman) else current_spearman
+        return current_spearman
 
     def _compute_reward(self, method):
         current_spearman = self._compute_metric(method)
+        # If current spearman is NaN i.e., current_metric = [0.0, 0.0,......0.0], return None and break the loop.
+        if np.isnan(current_spearman):
+            return
         reward = current_spearman - self._prev_spearman
         self._prev_spearman = current_spearman
         print(f'Reward:{reward}')
@@ -264,11 +269,11 @@ class RewardManager:
         self._org_diameter = self._compute_diameter()
 
     def _compute_diameter(self):
-        diameters = []
-        for i in range(10):
-            diameter, _ = self._graph.get_diameter()
-            diameters.append(diameter)
-        diameter = np.mean(diameters)
+        # diameters = []
+        # for i in range(10):
+        diameter, _ = self._graph.get_diameter()
+            # diameters.append(diameter)
+        # diameter = np.mean(diameters)
         return diameter
 
     def _compute_diameter_reward(self):
