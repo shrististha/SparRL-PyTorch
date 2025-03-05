@@ -124,7 +124,11 @@ class Graph:
         centrality_method, dict_params = centrality_methods[metrics]
         if metrics == "Closeness":
             # TODO: Need to change the closeness score order to match the node order
-            return centrality_method(self.nk_graph, **dict_params).run().topkScoresList()
+            closeness_model_run = centrality_method(self.nk_graph, **dict_params).run()
+            topscores =closeness_model_run.topkScoresList()
+            topnodes = closeness_model_run.topkNodesList()
+            sorted_values = [v for _, v in sorted(zip(topnodes, topscores))]
+            return sorted_values
         else:
             scores = centrality_method(self.nk_graph, **dict_params).run().scores()
             return scores
