@@ -27,6 +27,12 @@ class Graph:
         self.nk_graph = None
         print("self.get_num_edges()", self.get_num_edges())
 
+    def get_sub_graph_len(self, args):
+        if args.eta is None:
+            return self.args.subgraph_len
+        else:
+            return int(args.eta * self.get_num_edges())
+
     def _relabel_nodes(self):
         """Relabel nodes to [1, |V|]."""
         mapping = dict(zip(self._G.nodes, range(1,self.num_nodes+1)))

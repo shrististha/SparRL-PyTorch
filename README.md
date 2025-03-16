@@ -71,9 +71,13 @@ sbatch scripts/run.sh
 python code/main.py --edge_list graphs/karate.edgelist --episodes 500 --T_max 17 --save_dir karate_spearman_models/ --subgraph_len 32 --obj spearman --T_eval 32 --eval_batch_size 1 --decay_episodes 200
 ```
 
+As per the paper, training parameters:
+```code
+python code/main.py --edge_list graphs/karate.edgelist --episodes 500 --T_max 32 --save_dir karate_spearman_models/ --eta 0.2 --obj spearman --T_eval 32 --eval_batch_size 1 --decay_episodes 200
+```
 ## Evalute over 8 episodes
 ```code
-python code/main.py --edge_list graphs/karate.edgelist --episodes 8 --T_max 17 --save_dir karate_spearman_models/ --subgraph_len 32 --obj spearman --load --eval --eval_batch_size 1
+python code/main.py --edge_list graphs/karate.edgelist --episodes 8 --T_max 32 --save_dir karate_spearman_models/ --subgraph_len 32 --obj spearman --load --eval --eval_batch_size 1
 ```
 
 ## Show training graphs

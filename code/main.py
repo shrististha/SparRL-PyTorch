@@ -15,6 +15,7 @@ def main(args):
     
     memory = PrioritizedExReplay(args)
     graph = Graph(args)
+    args.subgraph_len = graph.get_sub_graph_len(args)
     # print("graph.num_nodes", graph.num_nodes)
 
     if args.expert_episodes > 0:
@@ -51,6 +52,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--episodes", type=int, default=2048,
             help="Number of episodes to train on.")
+    parser.add_argument("--eta", type=float, required=False,
+                        help="Edge kept ratio")
     parser.add_argument("--batch_size", type=int, default=64,
             help="Number of episodes to train on.")
     parser.add_argument("--save_iter", type=int, default=32,
