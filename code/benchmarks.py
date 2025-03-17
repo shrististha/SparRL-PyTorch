@@ -29,6 +29,7 @@ class Benchmarks:
         if self._args.com_labels:
             self._com_detect = CommunityDetection(self._args, self._graph)
         self._org_pr = list(self._graph.get_page_ranks().values())
+        self._org_betweenness = self._graph.get_betweenness_list()
         self._reward_manager = RewardManager(self._args, self._graph)
         self._reward_manager.setup()
 
@@ -141,7 +142,7 @@ class Benchmarks:
                 metrics["S"]["ARI"][ratio] = simmelian_metrics.ari
                 
                 metrics["EFF"]["Spearman"][ratio] = local_deg_metrics.spearman
-                metrics["LD"]["Spearman"][ratio]= eff_metrics.spearman
+                metrics["LD"]["Spearman"][ratio] = eff_metrics.spearman
                 metrics["AD"]["Spearman"][ratio] = algebraic_dist_metrics.spearman
                 metrics["RE"]["Spearman"][ratio] = rand_metrics.spearman
                 metrics["LS"]["Spearman"][ratio] = local_sim_metrics.spearman
@@ -166,6 +167,7 @@ class Benchmarks:
     def get_metrics(self, G, sparsifier, ratio):
         ari_arr = np.zeros(self._args.predict_runs)
         spearman_arr = np.zeros(self._args.predict_runs)
+        spearman_arr_betweenness = np.zeros(self._args.predict_runs)
         edge_arr = np.zeros(self._args.predict_runs, dtype=np.int32)
         spsp_arr = np.zeros(self._args.predict_runs)
         spsp_freq = {}
@@ -207,7 +209,11 @@ class Benchmarks:
                 updated_pr = list(self._graph.get_page_ranks().values())
                 spearmanr = stats.spearmanr(self._org_pr, updated_pr)
                 spearman_arr[i] = spearmanr.correlation
-            
+            if self._args.obj == "betweenness":
+                updated_betweenness = self._graph.get_betweenness_list()
+                spearmanr = stats.spearmanr(self._org_betweenness, updated_betweenness)
+                spearman_arr_betweenness[i] = spearmanr.correlation
+
             edge_arr[i] = self._graph.get_num_edges()
             # spsp_str = "\n"
             # if self._args.obj == "spsp": 
@@ -219,7 +225,7 @@ class Benchmarks:
             #         total_prob += prob
         spsp_str = "\n\tSPSP REWARD: " + str(spsp_arr.mean())
         # print("spsp_arr", spsp_arr)
-        return Metrics(ari_arr.mean(), spearman_arr.mean(), edge_arr.mean(), spsp_str, spsp_freq)
+        return Metrics(ari_arr.mean(), spearman_arr_betweenness.mean(), edge_arr.mean(), spsp_str, spsp_freq)
 
 def main(args):
     benchmarks = Benchmarks(args)
