@@ -126,7 +126,7 @@ class Graph:
         Returns: A metrics value list
         """
         self.set_nk_graph()
-        centrality_methods = self.get_method_from_metrics_type('Centrality')
+        centrality_methods = self.get_method_from_metrics_type('Centrality', self.num_nodes)
         centrality_method, dict_params = centrality_methods[metrics]
         if metrics == "Closeness":
             # TODO: Need to change the closeness score order to match the node order
@@ -141,7 +141,7 @@ class Graph:
 
 
     @staticmethod
-    def get_method_from_metrics_type(metrics_type):
+    def get_method_from_metrics_type(metrics_type, nodes=0):
         """
         Get the dictionary of metrics method for the metrics type.
         Args:
@@ -152,8 +152,8 @@ class Graph:
         """
         if metrics_type == 'Centrality':
             return {
-                "Betweenness": (nk.centrality.EstimateBetweenness, {"normalized": True, "nSamples": 34}),
-                "Closeness": (nk.centrality.TopCloseness, {"k": 34}),
+                "Betweenness": (nk.centrality.EstimateBetweenness, {"normalized": True, "nSamples": nodes}),
+                "Closeness": (nk.centrality.TopCloseness, {"k": nodes}),
                 # "Eigenvector": (nk.centrality.EigenvectorCentrality, {}),
             }
         elif metrics_type == 'Distance':
