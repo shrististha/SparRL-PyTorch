@@ -16,4 +16,5 @@ dependencies:
   - conda-forge::scikit-learn
   - conda-forge::matplotlib
   - conda-forge::seaborn
+  - conda-forge::graph-tool
   - anaconda::pandas
