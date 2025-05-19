@@ -30,6 +30,7 @@ class Benchmarks:
             self._com_detect = CommunityDetection(self._args, self._graph)
         self._org_pr = list(self._graph.get_page_ranks().values())
         self._org_betweenness = self._graph.get_betweenness_list()
+        self._org_closeness = self._graph.get_closeness_list()
         self._reward_manager = RewardManager(self._args, self._graph)
         self._reward_manager.setup()
 
@@ -168,10 +169,11 @@ class Benchmarks:
         ari_arr = np.zeros(self._args.predict_runs)
         spearman_arr = np.zeros(self._args.predict_runs)
         spearman_arr_betweenness = np.zeros(self._args.predict_runs)
+        spearman_arr_closeness = np.zeros(self._args.predict_runs)
         edge_arr = np.zeros(self._args.predict_runs, dtype=np.int32)
         spsp_arr = np.zeros(self._args.predict_runs)
         spsp_freq = {}
-
+        sp_value = None
 
         for i in range(self._args.predict_runs):
             # Reset the graph
@@ -209,10 +211,19 @@ class Benchmarks:
                 updated_pr = list(self._graph.get_page_ranks().values())
                 spearmanr = stats.spearmanr(self._org_pr, updated_pr)
                 spearman_arr[i] = spearmanr.correlation
+                sp_value = spearman_arr.mean()
             if self._args.obj == "betweenness":
                 updated_betweenness = self._graph.get_betweenness_list()
                 spearmanr = stats.spearmanr(self._org_betweenness, updated_betweenness)
                 spearman_arr_betweenness[i] = spearmanr.correlation
+                sp_value = spearman_arr_betweenness.mean()
+
+            if self._args.obj == "closeness":
+                updated_closeness = self._graph.get_closeness_list()
+                spearmanr = stats.spearmanr(self._org_closeness, updated_closeness)
+                spearman_arr_closeness[i] = spearmanr.correlation
+                sp_value = spearman_arr_closeness.mean()
+
 
             edge_arr[i] = self._graph.get_num_edges()
             # spsp_str = "\n"
@@ -225,7 +236,7 @@ class Benchmarks:
             #         total_prob += prob
         spsp_str = "\n\tSPSP REWARD: " + str(spsp_arr.mean())
         # print("spsp_arr", spsp_arr)
-        return Metrics(ari_arr.mean(), spearman_arr_betweenness.mean(), edge_arr.mean(), spsp_str, spsp_freq)
+        return Metrics(ari_arr.mean(), sp_value, edge_arr.mean(), spsp_str, spsp_freq)
 
 def main(args):
     benchmarks = Benchmarks(args)

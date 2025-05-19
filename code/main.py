@@ -15,7 +15,6 @@ def main(args):
     
     memory = PrioritizedExReplay(args)
     graph = Graph(args)
-    args.subgraph_len = graph.get_sub_graph_len(args)
     # print("graph.num_nodes", graph.num_nodes)
 
     if args.expert_episodes > 0:
@@ -27,6 +26,8 @@ def main(args):
     env = Environment(args, agent, graph, "cuda")
     results_man = ResultsManager(args, agent, env)
     if args.eval:
+        args.T_max = int(graph.get_num_edges() - args.eta * graph.get_num_edges())
+        print(f'T max: {args.T_max}')
         results_man.eval()
     else:
         
