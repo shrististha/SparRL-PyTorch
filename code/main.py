@@ -12,7 +12,7 @@ from util import num_expert_episodes
 def main(args):
     if not os.path.exists(args.save_dir):
         os.mkdir(args.save_dir)
-    
+
     memory = PrioritizedExReplay(args)
     graph = Graph(args)
     # print("graph.num_nodes", graph.num_nodes)
@@ -21,16 +21,16 @@ def main(args):
         agent = RLAgent(args, memory, graph.num_nodes, ExpertAgent(args, graph))
     else:
         agent = RLAgent(args, memory, graph.num_nodes)
-    
+
 
     env = Environment(args, agent, graph, "cuda")
     results_man = ResultsManager(args, agent, env)
     if args.eval:
-        args.T_max = int(graph.get_num_edges() - args.eta * graph.get_num_edges())
-        print(f'T max: {args.T_max}')
+        # args.T_max = int(graph.get_num_edges() - args.eta * graph.get_num_edges())
+        # print(f'T max: {args.T_max}')
         results_man.eval()
     else:
-        
+
         # if args.expert_episodes > 0:
         #     expected_num_ep = num_expert_episodes(
         #         graph.get_num_edges(),
@@ -43,7 +43,7 @@ def main(args):
         #     print("args.expert_episodes mod args.workers", args.expert_episodes % args.workers)
         #     args.expert_episodes += args.workers  - (args.expert_episodes % args.workers)
         #     print("args.expert_episodes", args.expert_episodes)
-            
+
 
         # del graph
         agent_man = AgentManager(args, agent, results_man)
@@ -166,7 +166,7 @@ if __name__ == "__main__":
     il_args.add_argument("--expert_lam", type=float, default=0.001,
                     help="Weight of the expert margin classification loss.")
     il_args.add_argument("--expert_margin", type=float, default=0.001,
-                    help="Margin value used for IL margin classification loss.") 
+                    help="Margin value used for IL margin classification loss.")
     il_args.add_argument("--expert_epsilon", type=float, default=0.0,
                     help="Epsilon value added to priority value when using PER.")
     il_args.add_argument("--expert_spar", default="eff",
@@ -203,7 +203,7 @@ if __name__ == "__main__":
     eval_args.add_argument("--eval", action="store_true",
             help="Evaluate.")
 
-    mp_args = parser.add_argument_group("Multiprocess")    
+    mp_args = parser.add_argument_group("Multiprocess")
     mp_args.add_argument("--workers", type=int, default=1,
             help="Number of workers to use for training.")
 

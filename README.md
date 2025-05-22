@@ -73,16 +73,13 @@ python code/main.py --edge_list graphs/karate.edgelist --episodes 500 --T_max 17
 
 As per the paper, training parameters:
 ```code
-python code/main.py --edge_list graphs/karate.edgelist --episodes 500 --T_max 32 --save_dir karate_spearman_models/ --eta 0.2 --obj spearman --T_eval 32 --eval_batch_size 1 --decay_episodes 200
+python code/main.py --edge_list graphs/karate.edgelist --episodes 500 --T_max 32 --save_dir karate_spearman_models/ --subgraph_len 32 --obj spearman --T_eval 32 --eval_batch_size 1 --decay_episodes 200 --per_alpha 0.8 --gamma 0.99 --batch_size 32 --min_epsilon 0.05
 ```
 ## Evalute over 8 episodes
 ```code
 python code/main.py --edge_list graphs/karate.edgelist --episodes 8 --T_max 32 --save_dir karate_spearman_models/ --subgraph_len 32 --obj spearman --load --eval --eval_batch_size 1
 ```
-With eta:
-```code
-python code/main.py --edge_list graphs/karate.edgelist --episodes 8 --T_max 32 --save_dir karate_spearman_models/ --eta 0.2 --obj spearman --load --eval --eval_batch_size 1
-```
+
 ## Show training graphs
 ```code
 python code/util/plot_rewards.py --save_dir karate_spearman_models --reward_smooth_w 64
